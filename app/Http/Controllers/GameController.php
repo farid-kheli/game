@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Game;
+use Illuminate\Support\Facades\Broadcast;
+use App\Events\invite;
 
 class GameController extends Controller
 {
@@ -16,6 +18,7 @@ class GameController extends Controller
             'Xplayer' =>$table[$chosen == 0? 1 : 0 ]->id,
             'turn' => 1,
         ])->id;
+        broadcast(new invite($user1->only('id','name'),$user2,$gameId));
         return to_route('game',$gameId);
     }
 }
