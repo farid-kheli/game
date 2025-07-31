@@ -12,5 +12,7 @@ class Game extends Model
         'winner',
         'board',
         'turn',
+        'leagelmove',
+        'smallboard'
     ];
 }

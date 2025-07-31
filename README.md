@@ -82,10 +82,11 @@ php artisan reverb:start
 
 ## 🔄 WebSocket Channels
 
-| Channel             | Purpose                          |
-| ------------------- | -------------------------------- |
-| `onlineusers`       | Tracks all online users          |
-| `game.{id}`         | Real-time board update events    |
+| Channel             | Purpose                                        |
+| ------------------- | --------------------------------               |
+| `onlineusers`       | Tracks all online users                        |
+| `game.{id}`         | Real-time board update events                  |
+| `notification.{id}` | Real-time notification on events from users    |
 
 ---
 

@@ -86,7 +86,6 @@ x-data="{
                Echo.private('notification.' + {{ auth()->id() }})
             .listen('invite', (e) => {
                 GameInvites.push(e)
-                console.log(GameInvites)
             });
     "
 >

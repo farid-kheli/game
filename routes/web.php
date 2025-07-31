@@ -9,15 +9,12 @@ use App\Events\emaple;
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/game/{gameId}', function () {
-        return view('dashboard');
-    })->name('game');
+    Route::get('/game/{game}',[GameController::class, 'game'] )->name('game');
     Route::get('/', [MainController::class, 'home'])->name('home');
     Route::get('/game/{user1}/{user2}', [GameController::class, 'create'])->name('game.create');
+    Route::post('/game/move', [GameController::class, 'move'])->name('game.move');
 });
-Route::get('/ws', function () {
-    broadcast(new emaple());
-});
+
 
 
 Route::middleware('auth')->group(function () {

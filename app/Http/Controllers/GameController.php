@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Game;
 use Illuminate\Support\Facades\Broadcast;
 use App\Events\invite;
+use App\Events\move;
 
 class GameController extends Controller
 {
@@ -20,5 +21,35 @@ class GameController extends Controller
         ])->id;
         broadcast(new invite($user1->only('id','name'),$user2,$gameId));
         return to_route('game',$gameId);
+    }
+    public function game(Game $game){
+        return view('dashboard', [ 'gameId' => $game->id, 'status' => json_decode($game->board),'leagalmove' => $game->leagelmove,'board' =>json_decode($game->smallboard)]);
+    }
+    public function move(Request $request){
+        $Game = Game::find($request->input('game_id'));
+        $user = User::find(auth()->id());
+        $move = $request->input('id');
+        $status = $request->input('status');
+
+        if($Game->turn && $Game->Oplayer == $user->id || !$Game->turn && $Game->Xplayer == $user->id){
+            return response()->json([
+                'error' => true,
+                'message' => 'It is not your turn.',
+            ], 403);
+        }
+        if($status['S'.$move[1]][(int) $move[2]] != null){
+            return response()->json([
+                'error' => true,
+                'message' => 'this position is already taken',
+            ], 403);
+        }
+        if($Game->leagelmove != $move[1] && $Game->leagelmove != 9){
+            return response()->json([
+                'error' => true,
+                'message' => 'You can only play in the current legal move.',
+            ], 403);
+        }
+        broadcast(new move(User::find(auth()->id()),$Game,$move,$status));
+        
     }
 }

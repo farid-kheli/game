@@ -3,9 +3,13 @@
 use Illuminate\Support\Facades\Broadcast;
 
 use App\Models\User;
-
-Broadcast::channel('game.{id}', function ($id) {
-    return true;
+use App\Models\Game;
+Broadcast::channel('game.{id}', function (User $user , $id) {
+    $game = Game::find($id);
+    if (!$game) {
+        return false;
+    }
+    return (int) $user->id === (int) $game->Oplayer ||(int) $user->id === (int) $game->Xplayer;    
 });
 Broadcast::channel('onlineusers.{id}', function (User $user,$id) {
     return [
