@@ -4,20 +4,19 @@
 <head lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ asset('css/game1.css')}}">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
     <title>game1</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js','resources/css/game.css','resources/js/game.js'])
 </head>
-<!--  -->
 <body>
     <div class="game">
         <div class="title" id="title"
         x-init="
+        
     
     Echo.private('game.{{$gameId}}').listen('move' ,(e) => {
             if(e.message != ''){
-                console.log(e.message);
+               showError(e.message);
             }
                 posision(e.status,e.Game?.leagelmove,e.SBoard);
             
@@ -28,7 +27,7 @@
             game
         </div>
        
-
+        <div class="game-board">
         <div class="main1" id="item0">
             <div class="main2" id="S00" onclick="SendMove(this.id)"></div>
             <div class="main2" id="S01" onclick="SendMove(this.id)"></div>
@@ -132,6 +131,7 @@
             <div class="main2" id="S88" onclick="SendMove(this.id)"></div>
         </div>
     </div>
+</div>
     <!--
     <audio id="beap" preload="auto">
         <source src="beap.mp3.wav">
@@ -149,52 +149,22 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-<script>
-posision(@json($status),{{ $leagalmove }},@json($board));
-function posision(curentstatus,leagalmove,board) {
-    for (let i = 0; i < 9; i++) {
-        for(let j = 0; j < 9 ;j ++){
-            let element = document.getElementById(`S${i}${j}`);
-            
-            if( element!= null && element.innerHTML != curentstatus[`S${i}`][j]){
-                element.innerHTML = curentstatus[`S${i}`][j];
-            }
-        }
-        winning(i,board[`S${i}`])
-    }
-    if(leagalmove != 9){
-        for (let i = 0; i < 9; i++) {
-            if (i != leagalmove) {
-                document.getElementById(`item${i}`).style.background = '#f0ffff62';
-                np.push(i);
-            }
-            document.getElementById(`item${leagalmove}`).style.background = '';
-        }
-    }
-    else{
-        for (let i = 0; i < 9; i++) {
-            document.getElementById(`item${i}`).style.background = '';
-        }
-    }
-}
+<script type="module">
+    import { posision ,showError } from 'http://[::1]:5173/resources/js/game.js'
 
-function winning(index,A){
-    if (A != null) {
-        document.getElementById(`item${index}`).innerHTML = A;
+    window.paly = function(curentstatus, leagalmove, board) {
+        posision(curentstatus, leagalmove, board);
     }
-}
+    paly(@json($status), {{ $leagalmove }}, @json($board));
 
-function SendMove(id) {
-    axios.post("{{route('game.move')}}", {
-        game_id: {{$gameId}},
-        id: id,
-        status: status,
-        lastmoveawinner:lastmoveawinner
-    })
-    .catch(error => {
-        alert(error.response.data.message || 'An error occurred');
-    });
-}
-
+    window.SendMove = function(id) {
+        axios.post("{{route('game.move')}}", {
+            game_id: {{$gameId}},
+            id: id,
+        })
+        .catch(error => {
+            showError(error.response.data.message || 'An error occurred');
+        });
+    }
 </script>
 </html>

@@ -29,7 +29,7 @@ class GameController extends Controller
         $Game = Game::find($request->input('game_id'));
         $user = User::find(auth()->id());
         $move = $request->input('id');
-        $status = $request->input('status');
+        $status = json_decode($Game->board,true);
 
         if($Game->turn && $Game->Oplayer == $user->id || !$Game->turn && $Game->Xplayer == $user->id){
             return response()->json([
