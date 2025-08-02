@@ -15,4 +15,12 @@ class Game extends Model
         'leagelmove',
         'smallboard'
     ];
+    function getOplayer()
+    {
+        return User::find($this->Oplayer)->only(['id', 'name']);
+    }
+    function getXplayer()
+    {
+        return User::find($this->Xplayer)->only(['id', 'name']);
+    }
 }

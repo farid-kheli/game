@@ -1,4 +1,3 @@
-
 export function posision(curentstatus,leagalmove,board) {
     for (let i = 0; i < 9; i++) {
         for(let j = 0; j < 9 ;j ++){
@@ -142,18 +141,18 @@ export function showError(message, duration = 5000) {
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
         color: white;
         padding: 15px 25px;
         border-radius: 10px;
         font-weight: bold;
         font-size: 16px;
-        box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+        box-shadow: 0 4px 20px rgba(231, 76, 60, 0.4);
+        border: 1px solid rgba(231, 76, 60, 0.3);
         z-index: 1000;
         opacity: 0;
         transition: all 0.3s ease;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
         max-width: 90%;
         text-align: center;
     `;
@@ -219,18 +218,18 @@ export function showSuccess(message, duration = 3000) {
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background: linear-gradient(135deg, #4ecdc4, #44a08d);
-        color: white;
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+        color: #1a1a2e;
         padding: 15px 25px;
         border-radius: 10px;
         font-weight: bold;
         font-size: 16px;
-        box-shadow: 0 4px 20px rgba(78, 205, 196, 0.4);
+        box-shadow: 0 4px 20px rgba(79, 172, 254, 0.4);
+        border: 1px solid rgba(79, 172, 254, 0.3);
         z-index: 1000;
         opacity: 0;
         transition: all 0.3s ease;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
         max-width: 90%;
         text-align: center;
     `;

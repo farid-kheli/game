@@ -23,7 +23,7 @@ class GameController extends Controller
         return to_route('game',$gameId);
     }
     public function game(Game $game){
-        return view('dashboard', [ 'gameId' => $game->id, 'status' => json_decode($game->board),'leagalmove' => $game->leagelmove,'board' =>json_decode($game->smallboard)]);
+        return view('dashboard', ['game'=>$game,'gameId' => $game->id, 'status' => json_decode($game->board),'leagalmove' => $game->leagelmove,'board' =>json_decode($game->smallboard)]);
     }
     public function move(Request $request){
         $Game = Game::find($request->input('game_id'));

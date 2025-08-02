@@ -9,6 +9,55 @@
     @vite(['resources/css/app.css', 'resources/js/app.js','resources/css/game.css','resources/js/game.js'])
 </head>
 <body>
+    <div class="game-container"
+    x-data="{
+            users: []
+            }"
+    x-init="Echo.join('onlineusers.1')
+            .here((e) => {
+            users = e.map(u => u.id);
+            }).joining((e) => {
+               users.push(e.id);
+            })
+            .leaving((e) => {
+               users = users.filter(u => u !== e.id);
+            })">
+        <div class="players-info">
+            <div class="player-card player-top" id="player1-card">
+                <div class="player-avatar">
+                    <span class="player-symbol">X</span>
+                </div>
+                <div class="player-details">
+                    <h3 class="player-name">{{$game->getOplayer()['name']}}</h3>
+                    <p class="player-status">Waiting...</p>
+                    <div class="player-score">
+                        <span class="score-label">Score:</span>
+                        <span class="score-value">0</span>
+                    </div>
+                </div>
+                <div class="turn-indicator" :class="{ 'active': users.includes({{ $game->getOplayer()['id'] }}),}"   id="player1-turn">
+                </div>
+            </div>
+
+            <div class="vs-divider">
+                <span>VS</span>
+            </div>
+
+            <div class="player-card player-bottom" id="player2-card">
+                <div class="player-avatar">
+                    <span class="player-symbol">O</span>
+                </div>
+                <div class="player-details">
+                    <h3 class="player-name">{{$game->getXplayer()['name']}}</h3>
+                    <p class="player-status">Waiting...</p>
+                    <div class="player-score">
+                        <span class="score-label">Score:</span>
+                        <span class="score-value">0</span>
+                    </div>
+                </div>
+                <div class="turn-indicator" :class="{ 'active': users.includes({{ $game->getXplayer()['id'] }}),}" id="player2-turn"></div>
+            </div>
+        </div>
     <div class="game">
         <div class="title" id="title"
         x-init="
@@ -18,10 +67,12 @@
             if(e.message != ''){
                showError(e.message);
             }
-                posision(e.status,e.Game?.leagelmove,e.SBoard);
-            
-
- })"
+        posision(e.status,e.Game?.leagelmove,e.SBoard);
+        })
+        Echo.join('game.{{$gameId}}').here((e) => {
+                   console.log(e);
+                });
+        "
          >
             <span>X O</span>
             game

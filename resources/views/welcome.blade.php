@@ -82,11 +82,6 @@ x-data="{
                users = users.filter(u => u !== e.id);
             })
 
-
-               Echo.private('notification.' + {{ auth()->id() }})
-            .listen('invite', (e) => {
-                GameInvites.push(e)
-            });
     "
 >
     <template x-for="invite in GameInvites">
