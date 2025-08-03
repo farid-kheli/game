@@ -13,11 +13,11 @@ use Illuminate\Queue\SerializesModels;
 class FriendRequestSent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $receiverName;
+    public $senderName;
     
-    public function __construct(private $receiver,public $id)
+    public function __construct(private $resiverid,private $receiver,public $id)
     {
-        $this->receiverName = $receiver->name;
+        $this->senderName = $receiver->name;
         
     }
 
@@ -25,7 +25,7 @@ class FriendRequestSent implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('notification.'.$this->receiver->id),
+            new PrivateChannel('notification.'.$this->resiverid),
         ];
     }
 }

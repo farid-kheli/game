@@ -8,7 +8,6 @@
     <style>
         .notification {
             position: fixed;
-            top: 1rem;
             right: 1rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -66,13 +65,23 @@
         }
     </style>
 </head>
+
 <body class="bg-gray-900 text-white" id="element"
 x-data="{
     users : [],
     GameInvites: [] ,
-    friendrequests: []
+    friendrequests: [], 
+    
     }"
     x-init="
+    @foreach ($requests as $request)
+        friendrequests.push({
+            id: {{ $request->id }},
+            senderName: '{{ $request->getusername() }}'
+        });
+        
+    @endforeach
+    console.log(friendrequests);
         Echo.join('onlineusers.1')
             .here((e) => {
             users = e.map(u => u.id);
@@ -90,16 +99,16 @@ x-data="{
         Echo.private('notification.' + {{ auth()->id() }})
             .listen('FriendRequestSent', (e) => {
                 friendrequests.push(e);
-                console.log(friendrequests);
+                console.log(e);
             });
 
 
     "
 >
-    <template x-for="invite in GameInvites">
-    <div class="notification" id="notification">
-        <div class="flex items-start space-x-3"
-        >
+<div>
+    <template x-for="(invite, index) in GameInvites" :key="invite.gameId">
+    <div class="notification" :style="'top: ' + (1 + index * 10) + 'rem;'">
+        <div class="flex items-start space-x-3">
             <div class="notification-icon">
                 🎮
             </div>
@@ -108,31 +117,30 @@ x-data="{
                 <p class="text-sm opacity-90 mb-3">Inivited you to a game</p>
                 <div class="flex space-x-2">
                     <a x-bind:href="'/game/'+invite.gameId"><button class="notification-button bg-white text-purple-700 hover:bg-gray-100">Join</button></a>
-                    <button class="notification-button bg-transparent border border-white text-white hover:bg-red-700 hover:text-white" onclick="document.getElementById('notification').style.display = 'none';">Dismiss</button>
+                    <button class="notification-button bg-transparent border border-white text-white hover:bg-red-700 hover:text-white" @click="GameInvites.splice(index, 1)">Dismiss</button>
                 </div>
             </div>
         </div>
     </div>
     </template>
-    <template x-for="friendrequest in friendrequests">
-        <div class="notification" id="notification">
-            <div class="flex items-start space-x-3"
-            >
+    <template x-for="(friendrequest, index) in friendrequests" :key="friendrequest.id + '-' + index">
+        <div class="notification" :style="'top: ' + (1 + (GameInvites.length + index) * 10) + 'rem;'">
+            <div class="flex items-start space-x-3">
                 <div class="notification-icon">
                     👤
                 </div>
                 <div class="flex-1">
-                    <h4 class="font-semibold text-lg mb-1" x-text="friendrequest.receiverName"></h4>
+                    <h4 class="font-semibold text-lg mb-1" x-text="friendrequest.senderName"></h4>
                     <p class="text-sm opacity-90 mb-3">sened you a friends request</p>
                     <div class="flex space-x-2">
                         <button @click="accespt(friendrequest.id, friendrequests)" class="notification-button bg-white text-purple-700 hover:bg-gray-100">accepte</button>
-                        <button @click="dicline(friendrequest.id,friendrequests)" class="notification-button bg-transparent border border-white text-white hover:bg-red-700 hover:text-white" >decline</button>
+                        <button @click="dicline(friendrequest.id,friendrequests)" class="notification-button bg-transparent border border-white text-white hover:bg-red-700 hover:text-white">decline</button>
                     </div>
                 </div>
             </div>
         </div>
+    </template>
         
-        </template>
     <div class="max-w-3xl mx-auto mt-12 bg-gray-800 p-6 rounded-lg shadow-lg"
     >
         <h2 class="text-center text-2xl font-bold mb-6">Online Users</h2>
@@ -178,7 +186,6 @@ function accespt(id, friendrequests) {
 }
 function dicline(id,friendrequests) {
     console.log(friendrequests);
-    // Remove the friend request from the list after accepting
     const index = friendrequests.findIndex(request => request.id === id);
     if (index !== -1) {
         friendrequests.splice(index, 1);

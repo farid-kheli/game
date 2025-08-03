@@ -17,7 +17,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chat/{ChatId}', [ChatController::class, 'index'])->name('chat.page');
     Route::post('/friend/request', [ChatController::class, 'request'])->name('friends.request');
     Route::post('/friend/accept', [ChatController::class, 'accept'])->name('friends.accept');
-    Route::post('/friend/decline', [ChatController::class, 'request'])->name('friends.decline');
+    Route::post('/friend/decline', [ChatController::class, 'decline'])->name('friends.decline');
 });
 
 

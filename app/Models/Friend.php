@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Friend extends Model
 {
@@ -12,4 +13,8 @@ class Friend extends Model
         'status',
         'created_at',
     ];
+    function getusername()  {
+        return User::find($this->user_id)->name;
+        
+    }
 }
