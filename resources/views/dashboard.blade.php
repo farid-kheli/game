@@ -25,15 +25,10 @@
         <div class="players-info">
             <div class="player-card player-top" id="player1-card">
                 <div class="player-avatar">
-                    <span class="player-symbol">X</span>
+                    <span class="player-symbol">O</span>
                 </div>
                 <div class="player-details">
                     <h3 class="player-name">{{$game->getOplayer()['name']}}</h3>
-                    <p class="player-status">Waiting...</p>
-                    <div class="player-score">
-                        <span class="score-label">Score:</span>
-                        <span class="score-value">0</span>
-                    </div>
                 </div>
                 <div class="turn-indicator" :class="{ 'active': users.includes({{ $game->getOplayer()['id'] }}),}"   id="player1-turn">
                 </div>
@@ -45,15 +40,10 @@
 
             <div class="player-card player-bottom" id="player2-card">
                 <div class="player-avatar">
-                    <span class="player-symbol">O</span>
+                    <span class="player-symbol">X</span>
                 </div>
                 <div class="player-details">
                     <h3 class="player-name">{{$game->getXplayer()['name']}}</h3>
-                    <p class="player-status">Waiting...</p>
-                    <div class="player-score">
-                        <span class="score-label">Score:</span>
-                        <span class="score-value">0</span>
-                    </div>
                 </div>
                 <div class="turn-indicator" :class="{ 'active': users.includes({{ $game->getXplayer()['id'] }}),}" id="player2-turn"></div>
             </div>
@@ -66,6 +56,9 @@
     Echo.private('game.{{$gameId}}').listen('move' ,(e) => {
             if(e.message != ''){
                showError(e.message);
+            }
+               if(e.winner != null){
+                showGameWinner(e.winner);
             }
         posision(e.status,e.Game?.leagelmove,e.SBoard);
         })

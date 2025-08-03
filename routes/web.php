@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
 use App\Events\emaple;
@@ -13,6 +14,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [MainController::class, 'home'])->name('home');
     Route::get('/game/{user1}/{user2}', [GameController::class, 'create'])->name('game.create');
     Route::post('/game/move', [GameController::class, 'move'])->name('game.move');
+    Route::get('/chat/{ChatId}', [ChatController::class, 'index'])->name('chat.page');
+    Route::post('/friend/request', [ChatController::class, 'request'])->name('friends.request');
+    Route::post('/friend/accept', [ChatController::class, 'accept'])->name('friends.accept');
+    Route::post('/friend/decline', [ChatController::class, 'request'])->name('friends.decline');
 });
 
 

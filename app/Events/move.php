@@ -19,6 +19,7 @@ class move implements ShouldBroadcastNow
     public $message = ''; 
     public $status ;
     public $SBoard ;
+    public $winner = null;
 
     public function __construct(public User $user,public Game $Game,public $move)
     {
@@ -57,7 +58,10 @@ class move implements ShouldBroadcastNow
             ($this->SBoard['S2'] == $this->SBoard['S4'] && $this->SBoard['S4'] == $this->SBoard['S6'] && $this->SBoard['S2'] != null) ||
             ($this->SBoard['S3'] == $this->SBoard['S4'] && $this->SBoard['S4'] == $this->SBoard['S5'] && $this->SBoard['S3'] != null) ||
             ($this->SBoard['S6'] == $this->SBoard['S7'] && $this->SBoard['S7'] == $this->SBoard['S8'] && $this->SBoard['S6'] != null)) {
-            $this->message = $user->name.' is the winner';
+            $this->winner = $user->name;
+            $Game->update([
+                'winner' => $user->id,
+            ]);
         }
         $Game->update([
             'board' => $this->status,

@@ -66,10 +66,11 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white"
+<body class="bg-gray-900 text-white" id="element"
 x-data="{
     users : [],
-    GameInvites: [] 
+    GameInvites: [] ,
+    friendrequests: []
     }"
     x-init="
         Echo.join('onlineusers.1')
@@ -81,6 +82,17 @@ x-data="{
             .leaving((e) => {
                users = users.filter(u => u !== e.id);
             })
+        Echo.private('notification.' + {{ auth()->id() }})
+            .listen('invite', (e) => {
+                GameInvites.push(e);
+
+            });
+        Echo.private('notification.' + {{ auth()->id() }})
+            .listen('FriendRequestSent', (e) => {
+                friendrequests.push(e);
+                console.log(friendrequests);
+            });
+
 
     "
 >
@@ -102,6 +114,25 @@ x-data="{
         </div>
     </div>
     </template>
+    <template x-for="friendrequest in friendrequests">
+        <div class="notification" id="notification">
+            <div class="flex items-start space-x-3"
+            >
+                <div class="notification-icon">
+                    👤
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-lg mb-1" x-text="friendrequest.receiverName"></h4>
+                    <p class="text-sm opacity-90 mb-3">sened you a friends request</p>
+                    <div class="flex space-x-2">
+                        <button @click="accespt(friendrequest.id, friendrequests)" class="notification-button bg-white text-purple-700 hover:bg-gray-100">accepte</button>
+                        <button @click="dicline(friendrequest.id,friendrequests)" class="notification-button bg-transparent border border-white text-white hover:bg-red-700 hover:text-white" >decline</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        </template>
     <div class="max-w-3xl mx-auto mt-12 bg-gray-800 p-6 rounded-lg shadow-lg"
     >
         <h2 class="text-center text-2xl font-bold mb-6">Online Users</h2>
@@ -120,7 +151,7 @@ x-data="{
             </div>
             <div class="flex space-x-2">
                 <button class="button bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">Message</button>
-                <button class="button bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600">Invite as Friend</button>
+                <button onclick="sendrequest({{ $user->id }})" class="button bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600">Invite as Friend</button>
                 <a href="{{ route('game.create',[auth()->id(),$user->id]) }}">
                     <button class="button bg-yellow-500 text-black px-3 py-1 rounded-md hover:bg-yellow-600">Play Game</button>
                 </a>
@@ -130,4 +161,44 @@ x-data="{
         </ul>
     </div>
 </body>
+<script>
+function accespt(id, friendrequests) {
+    // Remove the friend request from the list after accepting
+    const index = friendrequests.findIndex(request => request.id === id);
+    if (index !== -1) {
+        friendrequests.splice(index, 1);
+    }    
+    axios.post("{{ route('friends.accept') }}", {
+        id: id
+    }).then(response => {
+        console.log('Friend request accepted successfully');
+    }).catch(error => {
+        console.log('Error accepting friend request:', error.response.data.error);
+    });
+}
+function dicline(id,friendrequests) {
+    console.log(friendrequests);
+    // Remove the friend request from the list after accepting
+    const index = friendrequests.findIndex(request => request.id === id);
+    if (index !== -1) {
+        friendrequests.splice(index, 1);
+    } 
+    axios.post("{{ route('friends.decline') }}", {
+        id: id
+    }).then(response => {
+        console.log('Friend request declined successfully');
+    }).catch(error => {
+        console.log('Error declining friend request:', error.response.data.error);
+    });
+}
+function sendrequest(id) {
+    axios.post("{{ route('friends.request') }}", {
+        friend_id: id
+    }).then(response => {
+        console.log('Friend request sent successfully');
+    }).catch(error => {
+        console.log('Error sending friend request:', error.response.data.error);
+    }); 
+}
+</script>
 </html>

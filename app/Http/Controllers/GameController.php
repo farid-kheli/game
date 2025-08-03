@@ -30,7 +30,12 @@ class GameController extends Controller
         $user = User::find(auth()->id());
         $move = $request->input('id');
         $status = json_decode($Game->board,true);
-
+        if($Game->winner != null){
+            return response()->json([
+                'error' => true,
+                'message' => 'Game is already finished.',
+            ], 403);
+        }
         if($Game->turn && $Game->Oplayer == $user->id || !$Game->turn && $Game->Xplayer == $user->id){
             return response()->json([
                 'error' => true,
