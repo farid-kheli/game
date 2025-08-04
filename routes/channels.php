@@ -17,6 +17,9 @@ Broadcast::channel('onlineusers.{id}', function (User $user,$id) {
         'name' => $user->name,
     ];
 });
+Broadcast::channel('messages.{roomId}', function () {
+    return true;
+});
 Broadcast::channel('notification.{id}', function (User $user,$id) {
     return (int) $user->id === (int) $id;
 });

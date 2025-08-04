@@ -17,4 +17,8 @@ class Friend extends Model
         return User::find($this->user_id)->name;
         
     }
+    function getfriendname()  {
+        $user = auth()->user();
+        return $this->friend_id != $user->id ? User::find($this->friend_id)->name : User::find($this->user_id)->name;
+    }
 }

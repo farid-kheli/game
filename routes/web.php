@@ -14,7 +14,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [MainController::class, 'home'])->name('home');
     Route::get('/game/{user1}/{user2}', [GameController::class, 'create'])->name('game.create');
     Route::post('/game/move', [GameController::class, 'move'])->name('game.move');
-    Route::get('/chat/{ChatId}', [ChatController::class, 'index'])->name('chat.page');
+    Route::get('/chat/{User}', [ChatController::class, 'index'])->name('chat.page');
+    Route::post('/chat/send', [ChatController::class, 'sendmessage'])->name('chat.send');
     Route::post('/friend/request', [ChatController::class, 'request'])->name('friends.request');
     Route::post('/friend/accept', [ChatController::class, 'accept'])->name('friends.accept');
     Route::post('/friend/decline', [ChatController::class, 'decline'])->name('friends.decline');

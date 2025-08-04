@@ -6,12 +6,73 @@ use Illuminate\Http\Request;
 use App\Events\FriendRequestSent;
 use App\Models\Friend;
 use App\Models\User;
+use App\Models\Message;
+use App\Models\Chatroom;
 
 class ChatController extends Controller
 {
-    public function index()
+    public function index($userid)
+
     {
-        return view('chat');
+        $user = User::find($userid);
+        if (!$user) {
+            return redirect()->route('home')->with('error', 'User not found.');
+        }
+        $messages = Message::where('sender_id', auth()->id())->orWhere('receiver_id', auth()->id())
+            ->where('receiver_id', $user->id)
+            ->orWhere('sender_id', $user->id)
+            ->latest()
+            ->take(5)
+            ->get()
+            ->reverse();
+        $friends = Friend::where('user_id', auth()->id())
+            ->orWhere('friend_id', auth()->id())
+            ->get();
+        
+        $Romm = Chatroom::where('user1_id', auth()->id())
+            ->where('user2_id', $user->id)
+            ->orWhere(function ($query) use ($user) {
+                $query->where('user1_id', $user->id)
+                    ->where('user2_id', auth()->id());
+            })
+            ->first();
+        
+        return view('chat',[
+            'friends' => $friends,
+            'messages' => $messages,
+            'user' => $user->only('id','name'),
+            'RommId' => $Romm->id,
+        ]);
+    }
+    function sendmessage(Request $request)
+    {
+        $user = auth()->user();
+        $receiverId = $request->input('userId');
+        $messageContent = $request->input('message');
+        if (!$receiverId || !$messageContent) {
+            return response()->json(['error' => 'Receiver ID and message content are required.'], 400);
+        }
+
+        if ($user->id === $receiverId) {
+            return response()->json(['error' => 'You cannot send a message to yourself.'], 400);
+        }
+        $Romm = Chatroom::where('user1_id', auth()->id())
+        ->where('user2_id', $receiverId)
+        ->orWhere(function ($query) use ($receiverId) {
+            $query->where('user1_id', $receiverId)
+                ->where('user2_id', auth()->id());
+        })
+        ->first();
+        $message = Message::create([
+            'sender_id' => $user->id,
+            'receiver_id' => $receiverId,
+            'message' => $messageContent,
+        ]);
+
+        broadcast(new \App\Events\Message($messageContent,$user->id,$Romm->id,$message->created_at->diffForHumans()));
+
+        return to_route('chat.page',$receiverId);
+        
     }
     public function request(Request $request)
     {
@@ -67,7 +128,10 @@ class ChatController extends Controller
         if ($user->id != $friendRequest->friend_id) {
             return response()->json(['error' => 'Friend not authorised.'], 404);
         }
-        
+        Chatroom::create([
+            'user1_id' => $user->id,
+            'user2_id' => $friendRequest->user_id,
+        ]);
         $friendRequest->status = 'accepted';
         $friendRequest->save();
         

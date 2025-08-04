@@ -99,7 +99,6 @@ x-data="{
         Echo.private('notification.' + {{ auth()->id() }})
             .listen('FriendRequestSent', (e) => {
                 friendrequests.push(e);
-                console.log(e);
             });
 
 
